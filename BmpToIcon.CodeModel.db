@@ -1,0 +1,8 @@
+BuilderCodeModelV4
+F	c:\\builder projects\\bmptoicon\\winmainunit.cpp	134175734097056900
+S	function	wWinMain	wWinMain		4	12	1
+V	hInstance	wWinMain	HINSTANCE	HINSTANCE	4	31	1
+V	hPrevInstance	wWinMain	HINSTANCE	HINSTANCE	4	52	1
+V	pCmdLine	wWinMain	LPWSTR	LPWSTR	4	74	1
+V	nCmdShow	wWinMain	int	int	4	88	1
+D	c:\\builder projects\\bmptoicon\\winmainunit.cpp
