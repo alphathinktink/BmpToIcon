@@ -26,4 +26,4 @@
 // Icon resources
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-MAINICON           ICON           ".\\BPIcon.ico"
+IDI_MAINICON       ICON           ".\\BPIcon.ico"
