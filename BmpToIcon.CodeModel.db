@@ -1,4 +1,9 @@
 BuilderCodeModelV4
+F	c:\\builder projects\\bmptoicon\\resource.h	134175744712783318
+D	c:\\builder projects\\bmptoicon\\resource.h
+F	c:\\builder projects\\bmptoicon\\resource.rc	134175744712783318
+D	c:\\builder projects\\bmptoicon\\resource.h
+D	c:\\builder projects\\bmptoicon\\resource.rc
 F	c:\\builder projects\\bmptoicon\\winmainunit.cpp	134175734097056900
 S	function	wWinMain	wWinMain		4	12	1
 V	hInstance	wWinMain	HINSTANCE	HINSTANCE	4	31	1

@@ -1,0 +1,19 @@
+#include <windows.h>
+#include <commctrl.h>
+#include <richedit.h>
+#include "resource.h"
+#ifndef WC_STATIC
+#define WC_STATICA "Static"
+#define WC_STATICW L"Static"
+#ifdef UNICODE
+#define WC_STATIC WC_STATICW
+#else
+#define WC_STATIC WC_STATICA
+#endif
+#endif
+#ifndef LVS_EX_FULLROWSELECT
+#define LVS_EX_FULLROWSELECT 0x20
+#endif
+
+
+
