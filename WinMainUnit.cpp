@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <limits>
 
 //------------------------------------------------------------------------------------------
 
@@ -35,6 +36,18 @@ struct IconImage
 
 HWND g_hList = nullptr;
 HWND g_hStatus = nullptr;
+
+constexpr int kMaxImageDimension = 4096;
+
+bool MulSizeT(size_t a, size_t b, size_t &out)
+{
+	if (a != 0 && b > (std::numeric_limits<size_t>::max() / a))
+	{
+		return false;
+	}
+	out = a * b;
+	return true;
+}
 
 //------------------------------------------------------------------------------------------
 
@@ -101,10 +114,18 @@ bool LoadBmpViaGdi(const std::wstring &path, BmpImage &outBmp, std::wstring &out
 	const int height = std::abs(ds.dsBm.bmHeight);
 	const int bpp = ds.dsBm.bmBitsPixel;
 	const int stride = ds.dsBm.bmWidthBytes;
+	const int bytesPerPixel = bpp / 8;
 	if (width <= 0 || height <= 0)
 	{
 		DeleteObject(hBmp);
 		outError = L"Bitmap dimensions are invalid.";
+		return false;
+	}
+
+	if (width > kMaxImageDimension || height > kMaxImageDimension)
+	{
+		DeleteObject(hBmp);
+		outError = L"Bitmap dimensions exceed supported limits.";
 		return false;
 	}
 
@@ -115,12 +136,38 @@ bool LoadBmpViaGdi(const std::wstring &path, BmpImage &outBmp, std::wstring &out
 		return false;
 	}
 
+	if (stride <= 0)
+	{
+		DeleteObject(hBmp);
+		outError = L"Bitmap stride is invalid.";
+		return false;
+	}
+
+	size_t minRowBytes = 0;
+	if (!MulSizeT(static_cast<size_t>(width), static_cast<size_t>(bytesPerPixel), minRowBytes) ||
+		static_cast<size_t>(stride) < minRowBytes)
+	{
+		DeleteObject(hBmp);
+		outError = L"Bitmap row stride is inconsistent with dimensions.";
+		return false;
+	}
+
 	const bool srcBottomUp = (ds.dsBmih.biHeight > 0);
 	const unsigned char *srcBits = static_cast<const unsigned char *>(ds.dsBm.bmBits);
 
 	outBmp.width = width;
 	outBmp.height = height;
-	outBmp.bgraTopDown.assign(static_cast<size_t>(width) * static_cast<size_t>(height) * 4, 0);
+	size_t pixelCount = 0;
+	size_t dstBytes = 0;
+	if (!MulSizeT(static_cast<size_t>(width), static_cast<size_t>(height), pixelCount) ||
+		!MulSizeT(pixelCount, static_cast<size_t>(4), dstBytes))
+	{
+		DeleteObject(hBmp);
+		outError = L"Bitmap dimensions are too large.";
+		return false;
+	}
+
+	outBmp.bgraTopDown.assign(dstBytes, 0);
 
 	for (int y = 0; y < height; ++y)
 	{
@@ -145,6 +192,12 @@ bool LoadBmpViaGdi(const std::wstring &path, BmpImage &outBmp, std::wstring &out
 
 void BuildAndMask(const IconImage &icon, std::vector<unsigned char> &outMask)
 {
+	if (icon.width <= 0 || icon.height <= 0)
+	{
+		outMask.clear();
+		return;
+	}
+
 	const int maskStride = ((icon.width + 31) / 32) * 4;
 	outMask.assign(static_cast<size_t>(maskStride) * static_cast<size_t>(icon.height), 0);
 
@@ -170,6 +223,21 @@ bool BuildIconFromBmp(const BmpImage &bmp, IconImage &outIcon, std::wstring &out
 	if (bmp.width <= 0 || bmp.height <= 0 || bmp.bgraTopDown.empty())
 	{
 		outError = L"Bitmap data is empty.";
+		return false;
+	}
+
+	if (bmp.width > kMaxImageDimension || bmp.height > kMaxImageDimension)
+	{
+		outError = L"Bitmap dimensions exceed supported limits.";
+		return false;
+	}
+
+	size_t expectedBytes = 0;
+	if (!MulSizeT(static_cast<size_t>(bmp.width), static_cast<size_t>(bmp.height), expectedBytes) ||
+		!MulSizeT(expectedBytes, static_cast<size_t>(4), expectedBytes) ||
+		bmp.bgraTopDown.size() < expectedBytes)
+	{
+		outError = L"Bitmap data size is inconsistent with dimensions.";
 		return false;
 	}
 
@@ -204,6 +272,36 @@ bool BuildIconFromBmp(const BmpImage &bmp, IconImage &outIcon, std::wstring &out
 
 bool SaveIcoFile(const std::wstring &path, const IconImage &icon, std::wstring &outError)
 {
+	if (icon.width <= 0 || icon.height <= 0)
+	{
+		outError = L"Icon dimensions are invalid.";
+		return false;
+	}
+
+	if (icon.width > kMaxImageDimension || icon.height > kMaxImageDimension)
+	{
+		outError = L"Icon dimensions exceed supported limits.";
+		return false;
+	}
+
+	size_t expectedPixelBytes = 0;
+	if (!MulSizeT(static_cast<size_t>(icon.width), static_cast<size_t>(icon.height), expectedPixelBytes) ||
+		!MulSizeT(expectedPixelBytes, static_cast<size_t>(4), expectedPixelBytes) ||
+		icon.bgraTopDown.size() < expectedPixelBytes)
+	{
+		outError = L"Icon pixel data is inconsistent with dimensions.";
+		return false;
+	}
+
+	const int expectedMaskStride = ((icon.width + 31) / 32) * 4;
+	size_t expectedMaskBytes = 0;
+	if (!MulSizeT(static_cast<size_t>(expectedMaskStride), static_cast<size_t>(icon.height), expectedMaskBytes) ||
+		icon.andMask.size() != expectedMaskBytes)
+	{
+		outError = L"Icon transparency mask is inconsistent with dimensions.";
+		return false;
+	}
+
 	std::ofstream file(path.c_str(), std::ios::binary);
 	if (!file)
 	{
@@ -241,9 +339,24 @@ bool SaveIcoFile(const std::wstring &path, const IconImage &icon, std::wstring &
 	bih.biCompression = BI_RGB;
 
 	const int xorStride = icon.width * 4;
-	const DWORD xorSize = static_cast<DWORD>(static_cast<size_t>(xorStride) * static_cast<size_t>(icon.height));
-	const DWORD andSize = static_cast<DWORD>(icon.andMask.size());
-	const DWORD imageDataSize = static_cast<DWORD>(sizeof(BITMAPINFOHEADER)) + xorSize + andSize;
+	size_t xorSizeSizeT = 0;
+	if (!MulSizeT(static_cast<size_t>(xorStride), static_cast<size_t>(icon.height), xorSizeSizeT))
+	{
+		outError = L"Icon image size calculation overflowed.";
+		return false;
+	}
+
+	const size_t andSizeSizeT = icon.andMask.size();
+	const size_t imageDataSizeSizeT = sizeof(BITMAPINFOHEADER) + xorSizeSizeT + andSizeSizeT;
+	if (xorSizeSizeT > std::numeric_limits<DWORD>::max() ||
+		andSizeSizeT > std::numeric_limits<DWORD>::max() ||
+		imageDataSizeSizeT > std::numeric_limits<DWORD>::max())
+	{
+		outError = L"Icon image is too large for ICO format.";
+		return false;
+	}
+
+	const DWORD imageDataSize = static_cast<DWORD>(imageDataSizeSizeT);
 
 	IcoHeader hdr = {};
 	hdr.reserved = 0;
@@ -366,9 +479,23 @@ void ConvertAllFiles()
 
 	for (int i = 0; i < count; ++i)
 	{
-		wchar_t pathBuf[MAX_PATH * 4] = {};
-		SendMessageW(g_hList, LB_GETTEXT, static_cast<WPARAM>(i), reinterpret_cast<LPARAM>(pathBuf));
-		std::wstring bmpPath = pathBuf;
+		LRESULT textLen = SendMessageW(g_hList, LB_GETTEXTLEN, static_cast<WPARAM>(i), 0);
+		if (textLen == LB_ERR)
+		{
+			++failed;
+			lastError = L"Failed to read path from file list.";
+			continue;
+		}
+
+		std::vector<wchar_t> pathBuf(static_cast<size_t>(textLen) + 1, L'\0');
+		if (SendMessageW(g_hList, LB_GETTEXT, static_cast<WPARAM>(i), reinterpret_cast<LPARAM>(pathBuf.data())) == LB_ERR)
+		{
+			++failed;
+			lastError = L"Failed to read path from file list.";
+			continue;
+		}
+
+		std::wstring bmpPath(pathBuf.data());
 		std::wstring icoPath = MakeIcoPath(bmpPath);
 
 		BmpImage bmp;
