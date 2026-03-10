@@ -1,14 +1,158 @@
 BuilderCodeModelV4
-F	c:\\builder projects\\bmptoicon\\resource.h	134175747568402239
+F	c:\\builder projects\\bmptoicon\\resource.h	134175756900805741
 D	c:\\builder projects\\bmptoicon\\resource.h
-F	c:\\builder projects\\bmptoicon\\resource.rc	134175747568380330
+F	c:\\builder projects\\bmptoicon\\resource.rc	134175756900805741
 D	c:\\builder projects\\bmptoicon\\bpicon.ico
 D	c:\\builder projects\\bmptoicon\\resource.h
 D	c:\\builder projects\\bmptoicon\\resource.rc
-F	c:\\builder projects\\bmptoicon\\winmainunit.cpp	134175734097056900
-S	function	wWinMain	wWinMain		4	12	1
-V	hInstance	wWinMain	HINSTANCE	HINSTANCE	4	31	1
-V	hPrevInstance	wWinMain	HINSTANCE	HINSTANCE	4	52	1
-V	pCmdLine	wWinMain	LPWSTR	LPWSTR	4	74	1
-V	nCmdShow	wWinMain	int	int	4	88	1
+F	c:\\builder projects\\bmptoicon\\winmainunit.cpp	134175756900775724
+S	struct	BmpImage	BmpImage		21	8	1
+S	struct	IconImage	IconImage		28	8	1
+S	function	GetFolderPart	GetFolderPart		41	14	1
+S	function	GetBaseNameNoExt	GetBaseNameNoExt		51	14	1
+S	function	MakeIcoPath	MakeIcoPath		63	14	1
+S	function	SetStatus	SetStatus		68	6	1
+S	function	LoadBmpViaGdi	LoadBmpViaGdi		76	6	1
+S	function	BuildAndMask	BuildAndMask		146	6	1
+S	function	BuildIconFromBmp	BuildIconFromBmp		168	6	1
+S	function	SaveIcoFile	SaveIcoFile		205	6	1
+S	struct	IcoHeader	IcoHeader		215	9	1
+S	struct	IcoDirEntry	IcoDirEntry		222	9	1
+S	function	AddFilesToList	AddFilesToList		285	6	1
+S	function	RemoveSelectedFiles	RemoveSelectedFiles		333	6	1
+S	function	ClearAllFiles	ClearAllFiles		347	6	1
+S	function	ConvertAllFiles	ConvertAllFiles		353	6	1
+S	function	LayoutControls	LayoutControls		413	6	1
+S	function	WndProc	WndProc		447	18	1
+S	function	wWinMain	wWinMain		506	12	1
+T	struct	BmpImage	BmpImage	21	8
+T	struct	IconImage	IconImage	28	8
+T	struct	IcoHeader	IcoHeader	215	9
+T	struct	IcoDirEntry	IcoDirEntry	222	9
+M	BmpImage	width	int	0	23	6
+M	BmpImage	height	int	0	24	6
+M	BmpImage	bgraTopDown	std::vector<unsigned char>	0	25	29
+M	IconImage	width	int	0	30	6
+M	IconImage	height	int	0	31	6
+M	IconImage	bgraTopDown	std::vector<unsigned char>	0	32	29
+M	IconImage	andMask	std::vector<unsigned char>	0	33	29
+M	IcoHeader	reserved	WORD	0	217	8
+M	IcoHeader	type	WORD	0	218	8
+M	IcoHeader	count	WORD	0	219	8
+M	IcoDirEntry	width	BYTE	0	224	8
+M	IcoDirEntry	height	BYTE	0	225	8
+M	IcoDirEntry	colorCount	BYTE	0	226	8
+M	IcoDirEntry	reserved	BYTE	0	227	8
+M	IcoDirEntry	planes	WORD	0	228	8
+M	IcoDirEntry	bitCount	WORD	0	229	8
+M	IcoDirEntry	bytesInRes	DWORD	0	230	9
+M	IcoDirEntry	imageOffset	DWORD	0	231	9
+V	width	BmpImage	int	int	23	6	1
+V	height	BmpImage	int	int	24	6	1
+V	bgraTopDown	BmpImage	std::vector<unsigned char>	std::vector<unsigned char>	25	29	1
+V	width	IconImage	int	int	30	6	1
+V	height	IconImage	int	int	31	6	1
+V	bgraTopDown	IconImage	std::vector<unsigned char>	std::vector<unsigned char>	32	29	1
+V	andMask	IconImage	std::vector<unsigned char>	std::vector<unsigned char>	33	29	1
+V	g_hList		HWND	HWND	36	6	0
+V	g_hStatus		HWND	HWND	37	6	0
+V	wstring	GetFolderPart	const std::	const std::	41	39	1
+V	pos		size_t	size_t	43	9	1
+V	wstring	GetBaseNameNoExt	const std::	const std::	51	42	1
+V	slashPos		size_t	size_t	53	9	1
+V	start		size_t	size_t	54	9	1
+V	dotPos		size_t	size_t	55	9	1
+V	wstring	MakeIcoPath	const std::	const std::	63	37	1
+V	wstring	SetStatus	const std::	const std::	68	27	1
+V	wstring	LoadBmpViaGdi	const std::	const std::	76	31	1
+V	wstring	LoadBmpViaGdi	std::	std::	76	69	1
+V	hBmp		HBITMAP	HBITMAP	78	10	1
+V	path		HBITMAP	HBITMAP	78	46	1
+V	IMAGE_BITMAP		HBITMAP	HBITMAP	78	60	1
+V	width		const int	const int	100	12	1
+V	height		const int	const int	101	12	1
+V	bpp		const int	const int	102	12	1
+V	stride		const int	const int	103	12	1
+V	srcBottomUp		const bool	const bool	118	13	1
+V	char		const unsigned	const unsigned	119	17	1
+V	srcY		int	int	127	7	2
+V	char		const unsigned	const unsigned	128	18	2
+V	char		unsigned	unsigned	129	12	2
+V	char		const unsigned	const unsigned	133	19	3
+V	char		unsigned	unsigned	134	13	3
+V	IconImage	BuildAndMask	const	const	146	25	1
+V	outMask	BuildAndMask	std::vector<unsigned char>&	std::vector<unsigned char>&	146	70	1
+V	maskStride		const int	const int	148	12	1
+V	char		unsigned	unsigned	154	12	2
+V	char		const unsigned	const unsigned	155	18	2
+V	alpha		const unsigned char	const unsigned char	159	24	3
+V	BmpImage	BuildIconFromBmp	const	const	168	29	1
+V	wstring	BuildIconFromBmp	std::	std::	168	69	1
+V	keyB		const unsigned char	const unsigned char	180	22	1
+V	keyG		const unsigned char	const unsigned char	181	22	1
+V	keyR		const unsigned char	const unsigned char	182	22	1
+V	char		unsigned	unsigned	186	12	2
+V	char		unsigned	unsigned	189	13	3
+V	wstring	SaveIcoFile	const std::	const std::	205	29	1
+V	IconImage	SaveIcoFile	const	const	205	50	1
+V	wstring	SaveIcoFile	std::	std::	205	72	1
+V	reserved	IcoHeader	WORD	WORD	217	8	2
+V	type	IcoHeader	WORD	WORD	218	8	2
+V	count	IcoHeader	WORD	WORD	219	8	2
+V	width	IcoDirEntry	BYTE	BYTE	224	8	2
+V	height	IcoDirEntry	BYTE	BYTE	225	8	2
+V	colorCount	IcoDirEntry	BYTE	BYTE	226	8	2
+V	reserved	IcoDirEntry	BYTE	BYTE	227	8	2
+V	planes	IcoDirEntry	WORD	WORD	228	8	2
+V	bitCount	IcoDirEntry	WORD	WORD	229	8	2
+V	bytesInRes	IcoDirEntry	DWORD	DWORD	230	9	2
+V	imageOffset	IcoDirEntry	DWORD	DWORD	231	9	2
+V	xorStride		const int	const int	243	12	1
+V	xorSize		const DWORD	const DWORD	244	14	1
+V	andSize		const DWORD	const DWORD	245	14	1
+V	imageDataSize		const DWORD	const DWORD	246	14	1
+V	char		const unsigned	const unsigned	270	18	2
+V	hWnd	AddFilesToList	HWND	HWND	285	26	1
+V	files		std::vector<std::wstring>	std::vector<std::wstring>	302	28	1
+V	wchar_t		const	const	303	8	1
+V	first		std::wstring	std::wstring	304	15	1
+V	dir		std::wstring	std::wstring	313	16	2
+V	leaf		std::wstring	std::wstring	316	17	3
+V	idx		LRESULT	LRESULT	337	11	2
+V	LB_GETCURSEL		LRESULT	LRESULT	337	39	2
+V	count		const int	const int	355	12	1
+V	LB_GETCOUNT		const int	const int	355	59	1
+V	success		int	int	363	6	1
+V	failed		int	int	364	6	1
+V	lastError		std::wstring	std::wstring	365	15	1
+V	bmpPath		std::wstring	std::wstring	371	16	2
+V	icoPath		std::wstring	std::wstring	372	16	2
+V	bmp		BmpImage	BmpImage	374	12	2
+V	icon		IconImage	IconImage	375	13	2
+V	err		std::wstring	std::wstring	376	16	2
+V	summary		std::wstring	std::wstring	400	15	1
+V	hWnd	LayoutControls	HWND	HWND	413	26	1
+V	padding		const int	const int	418	12	1
+V	btnW		const int	const int	419	12	1
+V	btnH		const int	const int	420	12	1
+V	statusH		const int	const int	421	12	1
+V	listX		int	int	423	6	1
+V	listY		int	int	424	6	1
+V	listW		int	int	425	6	1
+V	listH		int	int	426	6	1
+V	btnX		const int	const int	433	12	1
+V	btnY		int	int	434	6	1
+V	hWnd	WndProc	HWND	HWND	447	31	1
+V	msg	WndProc	UINT	UINT	447	42	1
+V	wParam	WndProc	WPARAM	WPARAM	447	54	1
+V	lParam	WndProc	LPARAM	LPARAM	447	69	1
+V	hInstance	wWinMain	HINSTANCE	HINSTANCE	506	31	1
+V	nCmdShow	wWinMain	int	int	506	65	1
+V	wchar_t		const	const	508	8	1
+V	hWnd		HWND	HWND	527	7	1
+V	kClassName		HWND	HWND	527	33	1
+V	L		HWND	HWND	527	45	1
+V	WS_OVERLAPPEDWINDOW		HWND	HWND	528	3	1
+V	CW_USEDEFAULT		HWND	HWND	529	3	1
+V	CW_USEDEFAULT		HWND	HWND	529	18	1
 D	c:\\builder projects\\bmptoicon\\winmainunit.cpp
